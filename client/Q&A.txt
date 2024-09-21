@@ -1,0 +1,89 @@
+Q: How can state management functions like fetchBooks and handleFilterChange update the state in components where they were not initialized?
+  (i.e. how does setBooks update the 'books' state when it is inside the fetchBooks() function, which is inside NewBook.tsx?)
+
+A: This is a great question about **passing state management functions** between components in React! The key to understanding this behavior lies in how React manages state and the component hierarchy. Let’s break this down step by step.
+
+### Concept of Passing Functions as Props in React
+
+When you pass a function from one component to another as a **prop**, the function still retains access to the **scope** of the component where it was defined, which means it can manipulate the state from that component even if it is called from a child component.
+
+Here’s the reasoning behind how this works:
+
+1. **State is Managed in Parent Component**:
+   - In your example, `setBooks` (via `fetchBooks()`) and `setFilterCriteria` (via `handleFilterChange()`) are **state management functions** defined inside the parent component (`App.tsx`). 
+   - These functions are directly tied to the state of the `App.tsx` component (where `books` and `filterCriteria` are defined).
+   
+   ```tsx
+   const [books, setBooks] = useState<Book[]>([]);
+   const [filterCriteria, setFilterCriteria] = useState({...});
+   ```
+
+2. **Passing Functions as Props**:
+   - When you pass these functions (like `fetchBooks` and `handleFilterChange`) to child components (like `NewBook` or `Filter.tsx`), you are **not creating new instances** of the functions; you are simply giving the child components a way to **invoke these parent-defined functions**.
+   
+   For example, in `App.tsx`, you pass the function as a prop:
+
+   ```tsx
+   <NewBook fetchBooks={fetchBooks}/>
+   <Filter handleFilterChange={handleFilterChange} filterCriteria={filterCriteria}/>
+   ```
+
+3. **Child Components Invoking Parent's Functions**:
+   - When the child component (`NewBook.tsx` or `Filter.tsx`) invokes these functions, it doesn’t matter that the function is not **defined** in the child component. The function is still **executed within the context of the parent component** (`App.tsx`), and since it has access to the parent’s state (`books` or `filterCriteria`), it can update that state.
+
+   - For instance, `fetchBooks` in `NewBook.tsx` can still update the `books` state in `App.tsx` because when it runs, it is still operating in the **scope of the parent component** where it was defined. Similarly, `handleFilterChange` updates `filterCriteria` in the parent, even when called from `Filter.tsx`.
+
+4. **React's Re-rendering Behavior**:
+   - When `setBooks` or `setFilterCriteria` is called from a child component, React knows to re-render the parent component (`App.tsx`) because those states (`books`, `filterCriteria`) belong to `App.tsx`. When the parent re-renders, it also triggers a re-render in its child components (`NewBook` and `Filter`), ensuring the UI reflects the updated state.
+
+---
+
+### Key Points
+
+1. **Functions Retain Their Original Scope**:
+   - When you pass `fetchBooks` or `handleFilterChange` as props, the functions are still linked to the state (`books` or `filterCriteria`) they manage in `App.tsx`. This is because functions in JavaScript retain their **closure**, meaning they keep access to the variables and state from the scope where they were originally defined (in this case, `App.tsx`).
+
+2. **State is Owned by Parent Component**:
+   - The state (`books`, `filterCriteria`) belongs to the parent component (`App.tsx`). Even though the child components (`NewBook` or `Filter.tsx`) invoke the state management functions, the state itself and the logic to update it reside in the parent component.
+
+3. **Passing Down Functions Does Not Create Copies**:
+   - You’re not creating a **copy** of the function for each child component. You’re simply giving the child component a way to **call** the function from the parent, while the function still operates within the parent component’s scope.
+
+4. **Functionality Without Errors**:
+   - Because the functions (`fetchBooks`, `handleFilterChange`) have access to `setBooks` and `setFilterCriteria`, which are part of the parent’s state management, they can update the state from the child component without any errors. The state is centralized in the parent, and functions passed down simply trigger updates in the parent’s state.
+
+---
+
+### Example Breakdown
+
+Let’s look at your two examples:
+
+1. **`fetchBooks` in `NewBook.tsx`**:
+
+   - You passed `fetchBooks` from `App.tsx` to `NewBook.tsx`.
+   - When a new book is added in `NewBook.tsx`, it calls `fetchBooks`, which was defined in `App.tsx`.
+   - The `fetchBooks` function inside `App.tsx` is executed, fetching the updated book list and calling `setBooks` to update the parent’s state.
+
+2. **`handleFilterChange` in `Filter.tsx`**:
+
+   - You passed `handleFilterChange` from `App.tsx` to `Filter.tsx`.
+   - When a user types in the filter inputs, `handleFilterChange` is called, and it updates the `filterCriteria` state in `App.tsx` through `setFilterCriteria`.
+   - The `filterCriteria` state changes in `App.tsx`, and React re-renders `App.tsx` (and subsequently the `Filter` component) to reflect the updated filtering.
+
+---
+
+### Visualization
+
+1. **Parent (`App.tsx`)**:
+   - **Manages state**: `books`, `filterCriteria`.
+   - **Defines functions**: `fetchBooks()`, `handleFilterChange()`, both of which modify the parent’s state.
+
+2. **Child (`NewBook.tsx`, `Filter.tsx`)**:
+   - **Calls the functions**: The child components invoke the functions passed as props (`fetchBooks`, `handleFilterChange`).
+   - **No local state change**: The state changes in the parent (`App.tsx`), but the UI in the child component reflects those changes through re-rendering.
+
+---
+
+### Conclusion
+
+To summarize, when you pass functions that manage state as props, these functions still have access to the state of the component where they were defined (the parent component). This is because functions in JavaScript retain their original scope (closure). When the child components invoke these functions, they update the parent’s state, and React’s re-rendering mechanism ensures that both the parent and child components reflect the new state. This is why state updates happen without errors even though the functions are being called from different components.
