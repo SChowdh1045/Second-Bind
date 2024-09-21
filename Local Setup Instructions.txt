@@ -1,0 +1,21 @@
+Setup Instructions
+
+1. Unzip the project folder.
+
+2. Navigate to the client folder and run the following command on your terminal to install the client-side dependencies (MAKE SURE YOU HAVE node.js INSTALLED LOCALLY):
+   npm install
+   
+
+3. Navigate to the server folder and install the server-side dependencies:
+   npm install
+   
+
+4. Running the Project:
+   - Start the backend (server) by running the following command inside the server folder:
+     npm start
+     
+   - Start the frontend (client) by navigating to the client folder and running:
+     npm run dev
+     
+
+5. Once both the frontend and backend are running, open the browser and navigate to http://localhost:5173 to interact with the application.

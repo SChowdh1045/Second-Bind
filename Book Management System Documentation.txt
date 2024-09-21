@@ -1,0 +1,102 @@
+Book Management System Documentation
+
+This brief documentation explains how to use the Book Management System to add, filter, and export books.
+
+---
+
+Features Overview:
+
+1. Add New Books
+2. Filter Books
+3. Export Books in JSON Format
+
+--------------------------------------------------------------------------------------------------------
+
+1. Adding New Books
+
+To add a new book to the system, follow these steps:
+
+- On the main screen, you will see a form to add a new book. The form will contain input fields for the following details:
+  - Title: Enter the title of the book.
+  - Author: Enter the author's name.
+  - Genre: Select the book’s genre from the dropdown menu (e.g., Action, Drama, Fantasy).
+  - Publication Date: Choose the book's publication date using the date picker.
+  - ISBN: Enter the book's ISBN number.
+  
+- Once you've filled out the form, click the Add Book button.
+
+- The new book will be saved to the system and displayed in the list of books.
+
+--------------------------------------------------------------------------------------------------------
+
+2. Filtering Books
+
+You can filter the existing books based on the following criteria:
+
+- Title: Filter books by title. You can type in part of the title or the full title, and it will display books that match the text you entered.
+  
+- Author: Filter books by the author's name. The system will show books written by authors whose names match the filter.
+
+- Genre: Select a genre from the dropdown to show only books of that specific genre (e.g., Fiction, Horror, Romance).
+  
+- Publication Date: Filter books by publication date using the date picker. The system will display books published on the selected date.
+
+To filter books:
+- Enter/select the desired filter values in the filter form located on the right side of the screen.
+- The books will automatically update based on the criteria you input.
+
+--------------------------------------------------------------------------------------------------------
+
+3. Exporting Book Data
+
+You can export all the book data in JSON format by performing the following steps:
+
+- Click on the Export JSON button located on the main page.
+- This will download a file containing all the current book data in a JSON format.
+  
+The JSON file can be used for external storage, data transfer, or further processing.
+
+--------------------------------------------------------------------------------------------------------
+
+Additional Notes:
+
+- The system automatically updates the book list whenever you add a new book or apply filters.
+- The book data is stored in a SQLite database, ensuring persistent storage.
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+Design Decisions and Challenges Faced During Development
+
+During the development of the Book Management System, several design decisions were made, and some challenges were encountered. Below is a summary of the key decisions and the challenges faced:
+
+---
+
+1. Passing Functions with State Management Through Props
+
+One of the major design decisions involved how to manage state and pass functions through components. In the application, functions that modify the state (such as adding new books or applying filters) needed to be used across multiple components. 
+
+Challenges:
+- Initially, there was concern about how these functions, which manage state inside the `App.tsx` component, could be passed down to child components like `NewBook.tsx` and `Filter.tsx` without causing errors.
+  
+Solution:
+- The React pattern of lifting state up was applied. The state is managed in the main `App.tsx` component, while child components receive the necessary functions (like `fetchBooks` and `handleFilterChange`) as props. This allowed the system to maintain a centralized state while allowing child components to manipulate the state effectively.
+
+  For example:
+  - The `fetchBooks()` function in `App.tsx` manages the state for the book list and is passed as a prop to the `NewBook` component. 
+  - The `handleFilterChange()` function updates the filtering criteria in the main component and is passed to the `Filter` component to manage user input.
+
+This design ensured that the state was updated efficiently while keeping the components flexible and reusable.
+
+---
+
+2. Animation Decision: Spinning the "Add Book" Component
+
+Another design decision was to enhance the visual appeal of the "Add Book" component. Initially, the plan was to add a rotation animation to the "Add Book" form, where the form would spin multiple times, slowing down, and then stop on the first render.
+
+Challenges:
+- While this idea would create a unique and dynamic visual, the complexity of implementing such an animation using TailwindCSS, along with the potential for distracting users, led to reconsideration.
+
+Final Decision:
+- To keep the user experience simple and focused on the functionality, I decided not to implement the rotation animation. This decision helped maintain a clean user interface, without adding unnecessary complexity or distractions for the user.
